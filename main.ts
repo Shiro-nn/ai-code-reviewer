@@ -65,6 +65,7 @@ if (comments.length) {
     });
 }
 
+console.log('---6---');
 console.info(comments);
 
 
@@ -139,6 +140,7 @@ async function analyzeCode(files: ReturnType<typeof parseDiff>, pr: PRDetails) {
     const comments: Array<{ body: string; path: string; line: number }> = [];
     for (const f of files) {
         if (f.to === "/dev/null" || !f.to) continue;
+        console.log(f.chunks);
         for (const chunk of f.chunks) {
             const prompt = createPrompt(f.to, chunk, pr);
             const reviews = await getAIResponse(prompt);
