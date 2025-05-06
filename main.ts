@@ -132,8 +132,10 @@ async function getAIResponse(prompt: string) {
 async function analyzeCode(files: string[], pr: PRDetails) {
     const comments: Array<{ body: string; path: string; line: number }> = [];
     for (const file of files) {
+        console.log(file);
         const prompt = createPrompt(file, pr);
         const reviews = await getAIResponse(prompt);
+        console.log(reviews);
         if (reviews) {
             for (const r of reviews) {
                 comments.push({ body: r.reviewComment, path: file.split('\n')[2].substring(4), line: Number(r.lineNumber) });
