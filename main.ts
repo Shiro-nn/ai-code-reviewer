@@ -152,7 +152,7 @@ async function analyzeCode(files: string[], pr: PRDetails) {
         console.log(reviews);
         if (reviews) {
             for (const r of reviews) {
-                comments.push({ body: r.reviewComment, path: file.split('\n')[2].substring(4), line: Number(r.lineNumber) });
+                comments.push({ body: r.reviewComment, path: file.split('\n')[2].substring(6), line: Number(r.lineNumber) });
             }
         }
     }
