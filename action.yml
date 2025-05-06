@@ -39,7 +39,7 @@ runs:
         OPENAI_API_MODEL:     ${{ inputs.OPENAI_API_MODEL }}
         OPENAI_API_ENDPOINT:  ${{ inputs.OPENAI_API_ENDPOINT }}
         exclude:              ${{ inputs.exclude }}
-      run: deno run main.ts --allow-read --allow-env --allow-net
+      run: deno run "$GITHUB_ACTION_PATH/main.ts" --allow-read --allow-env --allow-net
 branding:
   icon: "aperture"
   color: "green"
