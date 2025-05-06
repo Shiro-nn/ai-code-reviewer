@@ -1,7 +1,5 @@
 import OpenAI from "npm:openai@4.20.1";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
-import parseDiff from "npm:parse-diff@0.11.1";
-import {minimatch} from "npm:minimatch";
 
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
@@ -28,7 +26,7 @@ interface PRDetails {
 
 // main
 const pr = await getPRDetails();
-let diffStr: string;
+let diffStr: string[];
 if (eventData.action === "opened") {
     diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
 } else if (eventData.action === "synchronize") {
@@ -37,7 +35,7 @@ if (eventData.action === "opened") {
         owner: pr.owner, repo: pr.repo, base: before, head: after,
         headers: { accept: "application/vnd.github.v3.diff" },
     });
-    diffStr = String(comp.data);
+    diffStr = splitByGitDiff(comp.data as unknown as string);
 } else if (eventData.action === "created") {
     diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
 } else {
@@ -49,15 +47,11 @@ console.log('---2---');
 console.log(diffStr);
 console.log('---3---');
 
-const parsed = parseDiff(diffStr);
-const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
-const filtered = parsed.filter(f => !patterns.some(p => minimatch(f.to || "", p)));
-console.log(filtered);
 console.log('---4---');
 console.log(pr);
 console.log('---5---');
 
-const comments = await analyzeCode(filtered, pr);
+const comments = await analyzeCode(diffStr, pr);
 if (comments.length) {
     await octokit.pulls.createReview({
         owner: pr.owner, repo: pr.repo, pull_number: pr.pull_number,
@@ -90,12 +84,12 @@ async function getPRDetails(): Promise<PRDetails> {
     };
 }
 
-async function getDiff(owner: string, repo: string, pull_number: number): Promise<string> {
+async function getDiff(owner: string, repo: string, pull_number: number): Promise<string[]> {
     const res = await octokit.pulls.get({
         owner, repo, pull_number,
         mediaType: { format: "diff" },
     });
-    return res.data as unknown as string;
+    return splitByGitDiff(res.data as unknown as string);
 }
 
 function stripThinkBlocks(input: string): string {
@@ -103,18 +97,17 @@ function stripThinkBlocks(input: string): string {
     return input.replace(/<think>[\s\S]*?<\/think>/gs, "").trimStart();
 }
 
-function createPrompt(filePath: string, chunk: any, pr: PRDetails): string {
+function createPrompt(diffs: string, pr: PRDetails): string {
     return `Your task is to review PR code. Output JSON:
 {"reviews":[{"lineNumber":<number>,"reviewComment":"<text>"}]}
-No compliments. Only issues. File: ${filePath}
+No compliments. Only issues.
 Title: ${pr.title}
 Desc:
 ---
 ${pr.description}
 ---
 \`\`\`diff
-${chunk.content}
-${chunk.changes.map((c: any) => `${c.ln ?? c.ln2} ${c.content}`).join("\n")}
+${diffs}
 \`\`\``;
 }
 
@@ -136,20 +129,25 @@ async function getAIResponse(prompt: string) {
     }
 }
 
-async function analyzeCode(files: ReturnType<typeof parseDiff>, pr: PRDetails) {
+async function analyzeCode(files: string[], pr: PRDetails) {
     const comments: Array<{ body: string; path: string; line: number }> = [];
-    for (const f of files) {
-        if (f.to === "/dev/null" || !f.to) continue;
-        console.log(f.chunks);
-        for (const chunk of f.chunks) {
-            const prompt = createPrompt(f.to, chunk, pr);
-            const reviews = await getAIResponse(prompt);
-            if (reviews) {
-                for (const r of reviews) {
-                    comments.push({ body: r.reviewComment, path: f.to, line: Number(r.lineNumber) });
-                }
+    for (const file of files) {
+        const prompt = createPrompt(file, pr);
+        const reviews = await getAIResponse(prompt);
+        if (reviews) {
+            for (const r of reviews) {
+                comments.push({ body: r.reviewComment, path: file.split('\n')[2].substring(4), line: Number(r.lineNumber) });
             }
         }
     }
     return comments;
+}
+
+function splitByGitDiff(fullDiff: string) {
+    return fullDiff
+        // разделяем по целой строке с маркером, включая её перенос
+        .split(/^diff --git[^\n]*\n/gm)
+        // каждый блок — уже без маркера, но может быть пустым
+        .map(b => b.trim())
+        .filter(b => b.length > 0);
 }
