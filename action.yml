@@ -21,7 +21,7 @@ inputs:
     default: ""
 runs:
   using: "docker"
-  image: "denoland/deno:alpine"
+  image: "docker://denoland/deno:alpine"
   args:
     - "run"
     - "--allow-read"
