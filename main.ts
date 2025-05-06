@@ -2,9 +2,11 @@ import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
 import jsonFixer from "npm:json-fixer@1.6.15";
 
+console.log(jsonFixer)
+
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
-const eventData = jsonFixer(Deno.readTextFileSync(eventPath));
+const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
 
 console.debug(`Event path: ${eventPath}`);
 
@@ -139,7 +141,7 @@ Rules:
 2. Answer **only** with the JSON; do not wrap it in prose.
 3. You may use Markdown inside each “reviewComment”.
 4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
-
+5. Don't create two comments on one line, make one comment through \\n\\n separation.
 `;
 }
 
