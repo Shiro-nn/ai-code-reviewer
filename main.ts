@@ -117,7 +117,7 @@ function getSystemPrompt(): string {
 No compliments. Only issues.
 Answer ONLY in JSON format. Without any other text. I used JSON parser, so its break my code.
 You can use markdown in your answer in "reviewComment" field.
-If you want add "global" comment for file, use "lineNumber": 0.
+If you want add "global" comment for file, use "lineNumber": 1.
 `;
 }
 
