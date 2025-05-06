@@ -1,6 +1,6 @@
 import OpenAI from "npm:openai";
 import { Octokit } from "npm:@octokit/rest";
-import parseDiff from "npm:parse-diff";
+import parseDiff from "npm:parse-diff@0.11.1";
 import {minimatch} from "npm:minimatch";
 
 // Читаем и парсим JSON события
@@ -45,6 +45,7 @@ if (eventData.action === "opened") {
     throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
 }
 
+console.log(diffStr)
 const parsed = parseDiff(diffStr);
 console.info(parsed);
 const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
@@ -84,7 +85,6 @@ async function getDiff(owner: string, repo: string, pull_number: number): Promis
         owner, repo, pull_number,
         mediaType: { format: "diff" },
     });
-    console.log(JSON.stringify(res.data))
     return res.data as unknown as string;
 }
 
