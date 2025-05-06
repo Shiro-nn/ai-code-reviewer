@@ -27,7 +27,7 @@ runs:
     - "--allow-read"
     - "--allow-env"
     - "--allow-net"
-    - "review.ts"
+    - "main.ts"
 branding:
   icon: "aperture"
   color: "green"
