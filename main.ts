@@ -1,6 +1,6 @@
 import OpenAI from "npm:openai";
 import { Octokit } from "npm:@octokit/rest";
-import parseDiff from "npm:parse-diff@0.11.1";
+import parseDiff from "npm:parse-diff";
 import {minimatch} from "npm:minimatch";
 
 // Читаем и парсим JSON события
@@ -84,8 +84,8 @@ async function getDiff(owner: string, repo: string, pull_number: number): Promis
         owner, repo, pull_number,
         mediaType: { format: "diff" },
     });
-    // @ts-ignore: GitHub возвращает строку diff
-    return res.data;
+    console.log(JSON.stringify(res.data))
+    return res.data as unknown as string;
 }
 
 function stripThinkBlocks(input: string): string {
