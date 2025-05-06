@@ -1,9 +1,10 @@
 import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
+import jsonFixer from "npm:json-fixer@1.6.15";
 
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
-const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
+const eventData = jsonFixer(Deno.readTextFileSync(eventPath));
 
 console.debug(`Event path: ${eventPath}`);
 
@@ -160,14 +161,14 @@ async function getAIResponse(prompt: string) {
     );
     console.log(text);
     try {
-      return JSON.parse(text).reviews;
+      return jsonFixer(text).reviews;
     } catch {
       try {
         console.log(`${text}}`);
-        return JSON.parse(`${text}}`).reviews;
+        return jsonFixer(`${text}}`).reviews;
       } catch {
         console.log(text.substring(0, text.length - 2));
-        return JSON.parse(text.substring(0, text.length - 2)).reviews;
+        return jsonFixer(text.substring(0, text.length - 2)).reviews;
       }
     }
   } catch (err) {
