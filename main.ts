@@ -1,5 +1,5 @@
-import OpenAI from "npm:openai";
-import { Octokit } from "npm:@octokit/rest";
+import OpenAI from "npm:openai@4.20.1";
+import { Octokit } from "npm:@octokit/rest@19.0.7";
 import parseDiff from "npm:parse-diff@0.11.1";
 import {minimatch} from "npm:minimatch";
 
@@ -81,11 +81,9 @@ async function getPRDetails(): Promise<PRDetails> {
 }
 
 async function getDiff(owner: string, repo: string, pull_number: number): Promise<string> {
-    const res = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+    const res = await octokit.pulls.get({
         owner, repo, pull_number,
-        mediaType: {
-            format: "diff",
-        },
+        mediaType: { format: "diff" },
     });
     return res.data as unknown as string;
 }
