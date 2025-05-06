@@ -137,7 +137,7 @@ Rules:
 1. **No** compliments or extraneous text—only list issues.
 2. Answer **only** with the JSON; do not wrap it in prose.
 3. You may use Markdown inside each “reviewComment”.
-4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff.
+4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
 
 `;
 }
