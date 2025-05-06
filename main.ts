@@ -46,8 +46,11 @@ if (eventData.action === "opened") {
 }
 
 const parsed = parseDiff(diffStr);
+console.info(parsed);
 const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
+console.info(patterns);
 const filtered = parsed.filter(f => !patterns.some(p => minimatch(f.to || "", p)));
+console.info(filtered);
 
 const comments = await analyzeCode(filtered, pr);
 if (comments.length) {
