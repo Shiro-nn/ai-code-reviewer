@@ -54,6 +54,9 @@ console.log(pr);
 console.log('---5---');
 
 const comments = await analyzeCode(diffStr, pr);
+console.log('---6---');
+console.info(comments);
+
 if (comments.length) {
     await octokit.pulls.createReview({
         owner: pr.owner, repo: pr.repo, pull_number: pr.pull_number,
@@ -61,8 +64,6 @@ if (comments.length) {
     });
 }
 
-console.log('---6---');
-console.info(comments);
 
 
 async function getPRDetails(): Promise<PRDetails> {
@@ -109,6 +110,7 @@ ${pr.description}
 ${diffs}
 \`\`\``;
 }
+
 function getSystemPrompt(): string {
     return `Your task is to review PR code. Output JSON:
 {"reviews":[{"lineNumber":<number>,"reviewComment":"<text>"}]}
