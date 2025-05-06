@@ -100,10 +100,7 @@ function stripThinkBlocks(input: string): string {
 }
 
 function createPrompt(diffs: string, pr: PRDetails): string {
-    return `Your task is to review PR code. Output JSON:
-{"reviews":[{"lineNumber":<number>,"reviewComment":"<text>"}]}
-No compliments. Only issues.
-Title: ${pr.title}
+    return `Title: ${pr.title}
 Desc:
 ---
 ${pr.description}
@@ -111,6 +108,15 @@ ${pr.description}
 \`\`\`diff
 ${diffs}
 \`\`\``;
+}
+function getSystemPrompt(): string {
+    return `Your task is to review PR code. Output JSON:
+{"reviews":[{"lineNumber":<number>,"reviewComment":"<text>"}]}
+No compliments. Only issues.
+Answer ONLY in JSON format. Without any other text. I used JSON parser, so its break my code.
+You can use markdown in your answer in "reviewComment" field.
+If you want add "global" comment for file, use "lineNumber": 0.
+`;
 }
 
 async function getAIResponse(prompt: string) {
@@ -121,7 +127,10 @@ async function getAIResponse(prompt: string) {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
-            messages: [{ role: "system", content: prompt }],
+            messages: [
+                { role: "system", content: getSystemPrompt() },
+                { role: "user", content: prompt }
+            ],
         });
         const text = response.choices[0].message?.content?.trim() || "{}";
         console.log(text);
