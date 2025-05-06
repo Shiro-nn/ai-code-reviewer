@@ -128,7 +128,7 @@ Rules:
 1. **No** compliments or extraneous text—only list issues.
 2. Answer **only** with the JSON; do not wrap it in prose.
 3. You may use Markdown inside each “reviewComment”.
-4. For a file-wide remark, set \`"lineNumber": 1\`.
+4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff.
 
 `;
 }
