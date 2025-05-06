@@ -45,6 +45,7 @@ if (eventData.action === "opened") {
     throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
 }
 
+console.debug(diffStr);
 const parsed = parseDiff(diffStr);
 const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
 const filtered = parsed.filter(f => !patterns.some(p => minimatch(f.to || "", p)));
