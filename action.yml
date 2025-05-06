@@ -24,8 +24,8 @@ runs:
   image: "denoland/deno:alpine"
   args:
     - "run"
-    - "--allow-read=${{ env.GITHUB_EVENT_PATH }}"
-    - "--allow-env=GITHUB_EVENT_PATH,GITHUB_TOKEN,OPENAI_API_KEY,OPENAI_API_MODEL,exclude"
+    - "--allow-read"
+    - "--allow-env"
     - "--allow-net"
     - "review.ts"
 branding:
