@@ -57,6 +57,8 @@ if (comments.length) {
     });
 }
 
+console.info(comments);
+
 
 async function getPRDetails(): Promise<PRDetails> {
     const { repository, number } = eventData;
