@@ -81,9 +81,11 @@ async function getPRDetails(): Promise<PRDetails> {
 }
 
 async function getDiff(owner: string, repo: string, pull_number: number): Promise<string> {
-    const res = await octokit.pulls.get({
+    const res = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
         owner, repo, pull_number,
-        mediaType: { format: "diff" },
+        mediaType: {
+            format: "diff",
+        },
     });
     return res.data as unknown as string;
 }
