@@ -127,7 +127,8 @@ async function getAIResponse(prompt: string) {
         const text = response.choices[0].message?.content?.trim() || "{}";
         console.log(text);
         return JSON.parse(stripThinkBlocks(text)).reviews;
-    } catch {
+    } catch(err) {
+        console.error(err);
         return null;
     }
 }
