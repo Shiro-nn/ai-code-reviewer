@@ -64,21 +64,21 @@ console.info(comments);
 
 
 async function getPRDetails(): Promise<PRDetails> {
-    const { repository, number } = eventData;
+    const { repository, number, issue } = eventData;
     console.debug({
         owner: repository.owner.login,
         repo: repository.name,
-        pull_number: number,
+        pull_number: issue?.number ?? number,
     })
     const pr = await octokit.pulls.get({
         owner: repository.owner.login,
         repo: repository.name,
-        pull_number: number,
+        pull_number: issue?.number ?? number,
     });
     return {
         owner: repository.owner.login,
         repo: repository.name,
-        pull_number: number,
+        pull_number: issue?.number ?? number,
         title: pr.data.title || "",
         description: pr.data.body || "",
     };
