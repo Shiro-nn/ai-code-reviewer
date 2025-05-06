@@ -8,7 +8,6 @@ const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
 const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
 
 console.debug(`Event path: ${eventPath}`);
-console.debug('Event data: ', eventData);
 
 // Получаем входные переменные
 const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
@@ -66,6 +65,11 @@ console.info(comments);
 
 async function getPRDetails(): Promise<PRDetails> {
     const { repository, number } = eventData;
+    console.debug({
+        owner: repository.owner.login,
+        repo: repository.name,
+        pull_number: number,
+    })
     const pr = await octokit.pulls.get({
         owner: repository.owner.login,
         repo: repository.name,
