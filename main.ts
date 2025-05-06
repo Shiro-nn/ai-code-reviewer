@@ -28,7 +28,6 @@ interface PRDetails {
 
 // main
 const pr = await getPRDetails();
-console.log(await octokit.pulls.listFiles({...pr}));
 let diffStr: string;
 if (eventData.action === "opened") {
     diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
@@ -44,6 +43,10 @@ if (eventData.action === "opened") {
 } else {
     throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
 }
+console.log('------');
+console.log(await octokit.pulls.listFiles({...pr}));
+console.log('------');
+console.log(diffStr);
 
 const parsed = parseDiff(diffStr);
 const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
