@@ -39,7 +39,7 @@ if (eventData.action === "opened") {
         headers: { accept: "application/vnd.github.v3.diff" },
     });
     diffStr = String(comp.data);
-} else if (eventData.action === "issue_comment") {
+} else if (eventData.action === "created") {
     diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
 } else {
     throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
