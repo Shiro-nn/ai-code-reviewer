@@ -1,4 +1,4 @@
-import OpenAI from "npm:openai@4.20.1";
+import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
 
 // Читаем и парсим JSON события
@@ -96,7 +96,7 @@ async function getDiff(owner: string, repo: string, pull_number: number): Promis
 
 function stripThinkBlocks(input: string): string {
     // Для удаления <think>…</think>, если понадобится
-    return input.replace(/<think>[\s\S]*?<\/think>/gs, "").trimStart();
+    return input.replace(/<think>[\s\S]*?<\/think>/gs, "").trim();
 }
 
 function createPrompt(diffs: string, pr: PRDetails): string {
@@ -118,13 +118,14 @@ async function getAIResponse(prompt: string) {
         const response = await openai.chat.completions.create({
             model: OPENAI_API_MODEL,
             temperature: 0.2,
-            max_tokens: 700,
+            max_completion_tokens: 700,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
             messages: [{ role: "system", content: prompt }],
         });
         const text = response.choices[0].message?.content?.trim() || "{}";
+        console.log(text);
         return JSON.parse(stripThinkBlocks(text)).reviews;
     } catch {
         return null;
