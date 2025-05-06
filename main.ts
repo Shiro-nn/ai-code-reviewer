@@ -118,7 +118,6 @@ async function getAIResponse(prompt: string) {
         const response = await openai.chat.completions.create({
             model: OPENAI_API_MODEL,
             temperature: 0.2,
-            max_completion_tokens: 700,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
