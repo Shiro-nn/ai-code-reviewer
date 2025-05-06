@@ -43,14 +43,19 @@ if (eventData.action === "opened") {
 } else {
     throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
 }
-console.log('------');
+console.log('---1---');
 console.log(await octokit.pulls.listFiles({...pr}));
-console.log('------');
+console.log('---2---');
 console.log(diffStr);
+console.log('---3---');
 
 const parsed = parseDiff(diffStr);
 const patterns = (Deno.env.get("exclude") || "").split(",").map(s => s.trim());
 const filtered = parsed.filter(f => !patterns.some(p => minimatch(f.to || "", p)));
+console.log(filtered);
+console.log('---4---');
+console.log(pr);
+console.log('---5---');
 
 const comments = await analyzeCode(filtered, pr);
 if (comments.length) {
