@@ -9,11 +9,13 @@ console.debug(`Event path: ${eventPath}`);
 
 // Получаем входные переменные
 const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
+const OPENAI_BASE_URL = Deno.env.get("OPENAI_API_ENDPOINT")!;
 const OPENAI_API_MODEL = Deno.env.get("OPENAI_API_MODEL")!;
 
 // Инициализация клиентов
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
-const openai = new OpenAI();
+const openai = new OpenAI({apiKey: OPENAI_API_KEY, baseURL: OPENAI_BASE_URL});
 
 interface PRDetails {
     owner: string;
