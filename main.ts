@@ -169,9 +169,13 @@ async function getAIResponse(prompt: string) {
         const text = stripThinkBlocks(response.choices[0].message?.content?.trim() || "{}");
         console.log(text);
         try {
-            return JSON.parse(stripThinkBlocks(text)).reviews;
+            return JSON.parse(text).reviews;
         } catch {
-            return JSON.parse( `${stripThinkBlocks(text)}}`).reviews;
+            try {
+                return JSON.parse( `${text}}`).reviews;
+            } catch {
+                return JSON.parse( text.substring(0, text.length-2)).reviews;
+            }
         }
     } catch(err) {
         console.error(err);
