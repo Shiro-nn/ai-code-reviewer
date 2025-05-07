@@ -52,6 +52,16 @@ console.log("---2---");
 console.log(diffStr);
 console.log("---3---");
 
+const excludePatterns = (Deno.env.get("exclude") ?? "")
+    .split(",")
+    .map((s) => s.trim());
+
+diffStr = diffStr.filter((str) => {
+  try { return !excludePatterns.some(p => str.split("\n")[2].endsWith(p)); }
+  catch { return true; }
+});
+
+console.log(diffStr);
 console.log("---4---");
 console.log(pr);
 console.log("---5---");
