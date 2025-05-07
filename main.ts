@@ -156,7 +156,7 @@ async function getAIResponse(prompt: string) {
       response.choices[0].message?.content?.trim() || "{}",
     );
     console.log(text);
-    const reply = yaml.loadAll(text.split('\n').filter(x => !x.startsWith('```')).join('\n'));
+    const reply = yaml.safeLoadAll(text.split('\n').filter(x => !x.startsWith('```')).join('\n'));
     console.log(reply);
     return reply;
   } catch (err) {
