@@ -1,8 +1,6 @@
 import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
-import yaml2json from "npm:yaml-to-json@0.3.0";
-
-console.log(yaml2json)
+import yaml from "npm:js-yaml@4.1.0";
 
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
@@ -157,7 +155,7 @@ async function getAIResponse(prompt: string) {
       response.choices[0].message?.content?.trim() || "{}",
     );
     console.log(text);
-    const reply = yaml2json(text);
+    const reply = yaml.loadAll(text);
     console.log(reply);
     return reply;
   } catch (err) {
