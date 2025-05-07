@@ -1,8 +1,8 @@
 import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
-import jsonFixer from "npm:json-fixer@1.6.15";
+import yaml2json from "npm:yaml-to-json@0.3.0";
 
-console.log(jsonFixer)
+console.log(yaml2json)
 
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
@@ -125,23 +125,18 @@ ${diffs}
 
 function getSystemPrompt(): string {
   return `
-You are a code review assistant. Analyze the given PR and output **only** a JSON object in this exact schema:
+You are a code review assistant. Analyze the given PR and output **only** a YAML object in this exact schema:
 
-{
-  "reviews": [
-    {
-      "lineNumber": <number>,
-      "reviewComment": "<markdown-formatted issue description>"
-    }
-  ]
-}
+lineNumber: <number>
+reviewComment: "<markdown-formatted issue description>"
 
 Rules:
 1. **No** compliments or extraneous text—only list issues.
-2. Answer **only** with the JSON; do not wrap it in prose.
+2. Answer **only** with the YAML; do not wrap it in prose.
 3. You may use Markdown inside each “reviewComment”.
-4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
-5. Don't create two comments on one line, make one comment through \\n\\n separation.
+4. If you want to add multiple comments, you can do so by creating multiple yaml responses (example: {yaml}\\n---------\\n{yaml}\\n).
+5. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
+6. Don't create two comments on one line, make one comment through \\n\\n separation.
 `;
 }
 
@@ -162,17 +157,9 @@ async function getAIResponse(prompt: string) {
       response.choices[0].message?.content?.trim() || "{}",
     );
     console.log(text);
-    try {
-      return jsonFixer(text).reviews;
-    } catch {
-      try {
-        console.log(`${text}}`);
-        return jsonFixer(`${text}}`).reviews;
-      } catch {
-        console.log(text.substring(0, text.length - 2));
-        return jsonFixer(text.substring(0, text.length - 2)).reviews;
-      }
-    }
+    const reply = yaml2json(text);
+    console.log(reply);
+    return reply;
   } catch (err) {
     console.error(err);
     return null;
