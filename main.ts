@@ -71,13 +71,27 @@ console.log("---6---");
 console.info(comments);
 
 if (comments.length) {
-  await octokit.pulls.createReview({
-    owner: pr.owner,
-    repo: pr.repo,
-    pull_number: pr.pull_number,
-    comments,
-    event: "COMMENT",
-  });
+  try {
+    await octokit.pulls.createReview({
+      owner: pr.owner,
+      repo: pr.repo,
+      pull_number: pr.pull_number,
+      comments: comments.map(({ body, path, line }) => ({
+        body,
+        path,
+        line: line + 2,
+      })),
+      event: "COMMENT",
+    });
+  } catch {
+    await octokit.pulls.createReview({
+      owner: pr.owner,
+      repo: pr.repo,
+      pull_number: pr.pull_number,
+      comments,
+      event: "COMMENT",
+    });
+  }
 }
 
 async function getPRDetails(): Promise<PRDetails> {
