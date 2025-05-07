@@ -125,16 +125,17 @@ function getSystemPrompt(): string {
   return `
 You are a code review assistant. Analyze the given PR and output **only** a YAML object in this exact schema:
 
-lineNumber: <number>
-reviewComment: "<markdown-formatted issue description>"
+- lineNumber: <number>
+  reviewComment: "<markdown-formatted issue description>"
+- lineNumber: <number>
+  reviewComment: "<markdown-formatted issue description>"
 
 Rules:
 1. **No** compliments or extraneous text—only list issues.
 2. Answer **only** with the YAML; do not wrap it in prose.
 3. You may use Markdown inside each “reviewComment”.
-4. If you want to add multiple comments, you can do so by creating multiple yaml responses (example: {yaml}\\n---------\\n{yaml}\\n).
-5. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
-6. Don't create two comments on one line, make one comment through \\n\\n separation.
+4. To leave a file-wide or “global” note, set “lineNumber” to the first line of the diff (from @@ -31,11 +31,10). DONT use first line of file, git broken due this.
+5. Don't create two comments on one line, make one comment through \\n\\n separation.
 `;
 }
 
@@ -155,7 +156,7 @@ async function getAIResponse(prompt: string) {
       response.choices[0].message?.content?.trim() || "{}",
     );
     console.log(text);
-    const reply = yaml.loadAll(text);
+    const reply = yaml.loadAll(text.split('\n').filter(x => !x.startsWith('```')).join('\n'));
     console.log(reply);
     return reply;
   } catch (err) {
@@ -167,6 +168,7 @@ async function getAIResponse(prompt: string) {
 async function analyzeCode(files: string[], pr: PRDetails) {
   const comments: Array<{ body: string; path: string; line: number }> = [];
   for (const file of files) {
+    const fileName = file.split("\n")[2].substring(6);
     console.log("--- ai ---");
     console.log(file);
     const prompt = createPrompt(file, pr);
@@ -175,11 +177,21 @@ async function analyzeCode(files: string[], pr: PRDetails) {
     console.log("--- ai ---");
     if (reviews) {
       for (const r of reviews) {
-        comments.push({
-          body: r.reviewComment,
-          path: file.split("\n")[2].substring(6),
-          line: Number(r.lineNumber),
-        });
+        if (r.constructor === [].constructor) {
+          for (const rr of r) {
+            comments.push({
+              body: rr.reviewComment,
+              path: fileName,
+              line: Number(rr.lineNumber),
+            });
+          }
+        } else {
+          comments.push({
+            body: r.reviewComment,
+            path: fileName,
+            line: Number(r.lineNumber),
+          });
+        }
       }
     }
   }
