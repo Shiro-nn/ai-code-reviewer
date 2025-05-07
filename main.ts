@@ -79,7 +79,7 @@ if (comments.length) {
       comments: comments.map(({ body, path, line }) => ({
         body,
         path,
-        line: line + 2,
+        line: line + 3,
       })),
       event: "COMMENT",
     });
