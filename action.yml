@@ -20,8 +20,18 @@ inputs:
     required: false
     default: ""
 runs:
-  using: 'node20'
-  main: 'dist/action.esm.js'
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run AI review script
+      shell: bash
+      env:
+        GITHUB_EVENT_PATH:    ${{ github.event_path }}
+      run: node dist/action.esm.js
+  # using: 'node20'
+  # main: 'dist/action.esm.js'
 branding:
   icon: "aperture"
   color: "green"
