@@ -20,26 +20,8 @@ inputs:
     required: false
     default: ""
 runs:
-  using: "composite"
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Deno
-      uses: denoland/setup-deno@v2
-      with:
-        deno-version: vx.x
-
-    - name: Run AI review script
-      shell: bash
-      env:
-        GITHUB_EVENT_PATH:    ${{ github.event_path }}
-        GITHUB_TOKEN:         ${{ inputs.GITHUB_TOKEN }}
-        OPENAI_API_KEY:       ${{ inputs.OPENAI_API_KEY }}
-        OPENAI_API_MODEL:     ${{ inputs.OPENAI_API_MODEL }}
-        OPENAI_API_ENDPOINT:  ${{ inputs.OPENAI_API_ENDPOINT }}
-        exclude:              ${{ inputs.exclude }}
-      run: deno run --allow-read --allow-env --allow-net "$GITHUB_ACTION_PATH/main.ts"
+  using: 'node20'
+  main: '/dist/action.esm.js'
 branding:
   icon: "aperture"
   color: "green"

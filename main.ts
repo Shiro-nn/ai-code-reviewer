@@ -1,6 +1,7 @@
 import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
 import yaml from "npm:js-yaml@4.1.0";
+import core from "npm:@actions/core";
 
 // Читаем и парсим JSON события
 const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
@@ -9,10 +10,10 @@ const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
 console.debug(`Event path: ${eventPath}`);
 
 // Получаем входные переменные
-const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
-const OPENAI_BASE_URL = Deno.env.get("OPENAI_API_ENDPOINT")!;
-const OPENAI_API_MODEL = Deno.env.get("OPENAI_API_MODEL")!;
+const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")!;
+const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY")!;
+const OPENAI_BASE_URL = core.getInput("OPENAI_API_ENDPOINT")!;
+const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL")!;
 
 // Инициализация клиентов
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
@@ -52,7 +53,7 @@ console.log("---2---");
 console.log(diffStr);
 console.log("---3---");
 
-const excludePatterns = (Deno.env.get("exclude") ?? "")
+const excludePatterns = (core.getInput("exclude") ?? "")
     .split(",")
     .map((s) => s.trim());
 

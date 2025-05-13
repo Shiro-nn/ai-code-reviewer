@@ -1,0 +1,34 @@
+name: Build bundle
+on:
+  push
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: vx.x
+
+      - name: Build bundle
+        shell: bash
+        run: deno --allow-env --allow-read --allow-run bundle.ts
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add . # Добавить все изменения форматирования
+          git commit -m "auto: build bundle file [skip ci]" # Создать НОВЫЙ коммит
+          # [skip ci] в сообщении коммита часто используется, чтобы предотвратить запуск этого же workflow снова
+          git push origin HEAD:${{ github.head_ref || github.ref_name }} # Пуш в ту же ветку, откуда пришел триггер
