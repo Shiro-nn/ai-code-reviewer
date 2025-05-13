@@ -25,12 +25,12 @@ runs:
     - name: Run AI Code Review binary
       shell: bash
       env:
-        GITHUB_EVENT_PATH:    ${{ github.event_path }}
-        GITHUB_TOKEN:         ${{ inputs.GITHUB_TOKEN }}
-        OPENAI_API_KEY:       ${{ inputs.OPENAI_API_KEY }}
-        OPENAI_API_MODEL:     ${{ inputs.OPENAI_API_MODEL }}
-        OPENAI_API_ENDPOINT:  ${{ inputs.OPENAI_API_ENDPOINT }}
-        exclude:              ${{ inputs.exclude }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+        OPENAI_API_MODEL: ${{ inputs.OPENAI_API_MODEL }}
+        OPENAI_API_ENDPOINT: ${{ inputs.OPENAI_API_ENDPOINT }}
+        exclude: ${{ inputs.exclude }}
       run: node $GITHUB_ACTION_PATH/dist/out.js
 branding:
   icon: "aperture"

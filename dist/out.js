@@ -1,3 +1,4 @@
+import fs from "fs";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -11683,13 +11684,14 @@ var jsYaml = {
 var js_yaml_default = jsYaml;
 
 // main.ts
-var eventPath = Deno.env.get("GITHUB_EVENT_PATH");
-var eventData = JSON.parse(Deno.readTextFileSync(eventPath));
+var DENO_ENV = Deno.env.toObject();
+var eventPath = DENO_ENV.GITHUB_EVENT_PATH;
+var eventData = JSON.parse(fs.readFileSync(eventPath));
 console.debug(`Event path: ${eventPath}`);
-var GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN");
-var OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-var OPENAI_BASE_URL = Deno.env.get("OPENAI_API_ENDPOINT");
-var OPENAI_API_MODEL = Deno.env.get("OPENAI_API_MODEL");
+var GITHUB_TOKEN = DENO_ENV.GITHUB_TOKEN;
+var OPENAI_API_KEY = DENO_ENV.OPENAI_API_KEY;
+var OPENAI_BASE_URL = DENO_ENV.OPENAI_API_ENDPOINT;
+var OPENAI_API_MODEL = DENO_ENV.OPENAI_API_MODEL;
 var octokit = new Octokit2({ auth: GITHUB_TOKEN });
 var openai = new openai_default({ apiKey: OPENAI_API_KEY, baseURL: OPENAI_BASE_URL });
 var pr = await getPRDetails();
@@ -11709,14 +11711,14 @@ if (eventData.action === "opened") {
 } else if (eventData.action === "created") {
   diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
 } else {
-  throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
+  throw new Error(`Unsupported event: ${DENO_ENV.GITHUB_EVENT_NAME}`);
 }
 console.log("---1---");
 console.log(await octokit.pulls.listFiles({ ...pr }));
 console.log("---2---");
 console.log(diffStr);
 console.log("---3---");
-var excludePatterns = (Deno.env.get("exclude") ?? "").split(",").map((s) => s.trim());
+var excludePatterns = (DENO_ENV.exclude ?? "").split(",").map((s) => s.trim());
 diffStr = diffStr.filter((str3) => {
   try {
     return !excludePatterns.some((p) => str3.split("\n")[2].endsWith(p));
@@ -11859,7 +11861,9 @@ async function getAIResponse(prompt) {
       response.choices[0].message?.content?.trim() || "{}"
     );
     console.log(text);
-    const reply = js_yaml_default.loadAll(text.split("\n").filter((x) => !x.startsWith("```")).join("\n"));
+    const reply = js_yaml_default.loadAll(
+      text.split("\n").filter((x) => !x.startsWith("```")).join("\n")
+    );
     console.log(reply);
     return reply;
   } catch (err) {
