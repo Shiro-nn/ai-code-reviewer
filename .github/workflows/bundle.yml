@@ -26,7 +26,7 @@ jobs:
 
       - name: Formate
         shell: bash
-        run: deno fmt
+        run: deno fmt --ignore=.github
 
       - name: Build bundle
         shell: bash
