@@ -1,8 +1,9 @@
 import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
 import yaml from "npm:js-yaml@4.1.0";
+import process from "node:process";
 
-const DENO_ENV = Deno.env.toObject();
+const DENO_ENV = process.env; // Deno.env.toObject();
 // Читаем и парсим JSON события
 const eventPath = DENO_ENV.GITHUB_EVENT_PATH!;
 const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
