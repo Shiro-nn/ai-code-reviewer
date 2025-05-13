@@ -22,16 +22,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Run AI review script
+    - name: Run native AI Code Review binary
       shell: bash
       env:
         GITHUB_EVENT_PATH:    ${{ github.event_path }}
-      run: node "$GITHUB_ACTION_PATH/dist/action.esm.js"
-  # using: 'node20'
-  # main: 'dist/action.esm.js'
+        GITHUB_TOKEN:         ${{ inputs.GITHUB_TOKEN }}
+        OPENAI_API_KEY:       ${{ inputs.OPENAI_API_KEY }}
+        OPENAI_API_MODEL:     ${{ inputs.OPENAI_API_MODEL }}
+        OPENAI_API_ENDPOINT:  ${{ inputs.OPENAI_API_ENDPOINT }}
+        exclude:              ${{ inputs.exclude }}
+      run: |
+        chmod +x "$GITHUB_ACTION_PATH/dist/action"
+        $GITHUB_ACTION_PATH/dist/action
 branding:
   icon: "aperture"
   color: "green"

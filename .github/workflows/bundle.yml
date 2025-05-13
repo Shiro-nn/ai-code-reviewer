@@ -22,7 +22,7 @@ jobs:
 
       - name: Build bundle
         shell: bash
-        run: deno --allow-env --allow-read --allow-run bundle.ts
+        run: mkdir dist && deno compile --allow-env --allow-read --allow-run --output dist/action --target x86_64-unknown-linux-gnu main.ts
 
       - name: Commit and Push Changes
         run: |
