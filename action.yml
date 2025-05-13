@@ -21,7 +21,7 @@ inputs:
     default: ""
 runs:
   using: 'node20'
-  main: '/dist/action.esm.js'
+  main: 'dist/action.esm.js'
 branding:
   icon: "aperture"
   color: "green"
