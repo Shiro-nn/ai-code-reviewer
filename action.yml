@@ -29,7 +29,7 @@ runs:
       shell: bash
       env:
         GITHUB_EVENT_PATH:    ${{ github.event_path }}
-      run: node dist/action.esm.js
+      run: node "$GITHUB_ACTION_PATH/dist/action.esm.js"
   # using: 'node20'
   # main: 'dist/action.esm.js'
 branding:
