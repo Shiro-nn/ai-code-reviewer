@@ -11684,7 +11684,8 @@ var jsYaml = {
 var js_yaml_default = jsYaml;
 
 // main.ts
-var DENO_ENV = Deno.env.toObject();
+import process2 from "node:process";
+var DENO_ENV = process2.env;
 var eventPath = DENO_ENV.GITHUB_EVENT_PATH;
 var eventData = JSON.parse(fs.readFileSync(eventPath));
 console.debug(`Event path: ${eventPath}`);
