@@ -7,7 +7,20 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            runtime: x86_64-unknown-linux-gnu
+            name: linux
+          - os: windows-latest
+            runtime: x86_64-pc-windows-msvc
+            name: windows
+          - os: macos-latest
+            runtime: x86_64-apple-darwin
+            name: osx
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -22,8 +35,33 @@ jobs:
 
       - name: Build bundle
         shell: bash
-        run: deno compile --allow-env --allow-read --allow-run --allow-net --output dist/action --target x86_64-unknown-linux-gnu main.ts
+        run: deno compile --allow-env --allow-read --allow-run --allow-net --output dist/action-${{ matrix.name }} --target ${{ matrix.runtime }} main.ts
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist/action-${{ matrix.name }}
+          
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+          
+      - name: Recreate dist
+        shell: bash
+        run: rm -rf ./dist && mkdir -p ./dist
+          
+      - uses: actions/download-artifact@v4
+        with:
+          path: ./dist
+          
+      - name: Display structure of downloaded files
+        run: ls -R ./dist
+          
       - name: Commit and Push Changes
         run: |
           git config --global user.name 'github-actions[bot]'
