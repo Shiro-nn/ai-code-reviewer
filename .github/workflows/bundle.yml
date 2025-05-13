@@ -43,6 +43,7 @@ jobs:
           path: dist/action-${{ matrix.name }}
           
   upload:
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
