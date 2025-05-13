@@ -84,13 +84,42 @@ if (comments.length) {
       event: "COMMENT",
     });
   } catch {
-    await octokit.pulls.createReview({
-      owner: pr.owner,
-      repo: pr.repo,
-      pull_number: pr.pull_number,
-      comments,
-      event: "COMMENT",
-    });
+    try {
+      await octokit.pulls.createReview({
+        owner: pr.owner,
+        repo: pr.repo,
+        pull_number: pr.pull_number,
+        comments,
+        event: "COMMENT",
+      });
+    } catch {
+      for (const comment of comments) {
+        try {
+          await octokit.pulls.createReview({
+            owner: pr.owner,
+            repo: pr.repo,
+            pull_number: pr.pull_number,
+            comments: [{
+              ...comment,
+              line: comment.line + 3,
+            }],
+            event: "COMMENT",
+          });
+        } catch {
+          try {
+            await octokit.pulls.createReview({
+              owner: pr.owner,
+              repo: pr.repo,
+              pull_number: pr.pull_number,
+              comments: [comment],
+              event: "COMMENT",
+            });
+          } catch (err) {
+            console.warn(err);
+          }
+        }
+      }
+    }
   }
 }
 
