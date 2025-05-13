@@ -22,6 +22,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Set RUNNER_PATH based on OS
+      run: |
+        echo "Detected runner OS: $RUNNER_OS"
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          echo "RUNNER_PATH=dist/action-linux" >> $GITHUB_ENV
+        elif [ "$RUNNER_OS" = "macOS" ]; then
+          echo "RUNNER_PATH=dist/action-osx" >> $GITHUB_ENV
+        elif [ "$RUNNER_OS" = "Windows" ]; then
+          echo "RUNNER_PATH=dist/action-windows.exe" >> $GITHUB_ENV
+        fi
+      shell: bash
     - name: Run native AI Code Review binary
       shell: bash
       env:
@@ -32,8 +43,8 @@ runs:
         OPENAI_API_ENDPOINT:  ${{ inputs.OPENAI_API_ENDPOINT }}
         exclude:              ${{ inputs.exclude }}
       run: |
-        chmod +x "$GITHUB_ACTION_PATH/dist/action"
-        $GITHUB_ACTION_PATH/dist/action
+        chmod +x "$GITHUB_ACTION_PATH/$RUNNER_PATH"
+        $GITHUB_ACTION_PATH/$RUNNER_PATH
 branding:
   icon: "aperture"
   color: "green"
