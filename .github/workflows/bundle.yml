@@ -16,7 +16,7 @@ jobs:
             name: linux
           - os: windows-latest
             runtime: x86_64-pc-windows-msvc
-            name: windows
+            name: windows.exe
           - os: macos-latest
             runtime: x86_64-apple-darwin
             name: osx
@@ -40,6 +40,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
+          name: action-${{ matrix.name }}
           path: dist/action-${{ matrix.name }}
           
   upload:
