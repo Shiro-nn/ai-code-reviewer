@@ -24,6 +24,10 @@ jobs:
         shell: bash
         run: rm -rf ./dist && mkdir -p ./dist
 
+      - name: Formate
+        shell: bash
+        run: deno fmt
+
       - name: Build bundle
         shell: bash
         run: deno run --allow-env --allow-read --allow-run --allow-write --allow-net bundle.ts

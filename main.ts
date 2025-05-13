@@ -2,17 +2,18 @@ import OpenAI from "npm:openai@4.97.0";
 import { Octokit } from "npm:@octokit/rest@19.0.7";
 import yaml from "npm:js-yaml@4.1.0";
 
+const DENO_ENV = Deno.env.toObject();
 // Читаем и парсим JSON события
-const eventPath = Deno.env.get("GITHUB_EVENT_PATH")!;
+const eventPath = DENO_ENV.GITHUB_EVENT_PATH!;
 const eventData = JSON.parse(Deno.readTextFileSync(eventPath));
 
 console.debug(`Event path: ${eventPath}`);
 
 // Получаем входные переменные
-const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
-const OPENAI_BASE_URL = Deno.env.get("OPENAI_API_ENDPOINT")!;
-const OPENAI_API_MODEL = Deno.env.get("OPENAI_API_MODEL")!;
+const GITHUB_TOKEN = DENO_ENV.GITHUB_TOKEN!;
+const OPENAI_API_KEY = DENO_ENV.OPENAI_API_KEY!;
+const OPENAI_BASE_URL = DENO_ENV.OPENAI_API_ENDPOINT!;
+const OPENAI_API_MODEL = DENO_ENV.OPENAI_API_MODEL!;
 
 // Инициализация клиентов
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
@@ -44,7 +45,7 @@ if (eventData.action === "opened") {
 } else if (eventData.action === "created") {
   diffStr = await getDiff(pr.owner, pr.repo, pr.pull_number);
 } else {
-  throw new Error(`Unsupported event: ${Deno.env.get("GITHUB_EVENT_NAME")}`);
+  throw new Error(`Unsupported event: ${DENO_ENV.GITHUB_EVENT_NAME}`);
 }
 console.log("---1---");
 console.log(await octokit.pulls.listFiles({ ...pr }));
@@ -52,13 +53,16 @@ console.log("---2---");
 console.log(diffStr);
 console.log("---3---");
 
-const excludePatterns = (Deno.env.get("exclude") ?? "")
-    .split(",")
-    .map((s) => s.trim());
+const excludePatterns = (DENO_ENV.exclude ?? "")
+  .split(",")
+  .map((s) => s.trim());
 
 diffStr = diffStr.filter((str) => {
-  try { return !excludePatterns.some(p => str.split("\n")[2].endsWith(p)); }
-  catch { return true; }
+  try {
+    return !excludePatterns.some((p) => str.split("\n")[2].endsWith(p));
+  } catch {
+    return true;
+  }
 });
 
 console.log(diffStr);
@@ -209,7 +213,9 @@ async function getAIResponse(prompt: string) {
       response.choices[0].message?.content?.trim() || "{}",
     );
     console.log(text);
-    const reply = yaml.loadAll(text.split('\n').filter(x => !x.startsWith('```')).join('\n'));
+    const reply = yaml.loadAll(
+      text.split("\n").filter((x) => !x.startsWith("```")).join("\n"),
+    );
     console.log(reply);
     return reply;
   } catch (err) {
