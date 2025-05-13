@@ -26,7 +26,7 @@ jobs:
 
       - name: Build bundle
         shell: bash
-        run: deno run --allow-env --allow-read --allow-run --allow-write bundle.ts
+        run: deno run --allow-env --allow-read --allow-run --allow-write --allow-net bundle.ts
 
       - name: Commit and Push Changes
         run: |
