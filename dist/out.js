@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fsmodule from "fs";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -11687,7 +11687,7 @@ var js_yaml_default = jsYaml;
 import process2 from "node:process";
 var DENO_ENV = process2.env;
 var eventPath = DENO_ENV.GITHUB_EVENT_PATH;
-var eventData = JSON.parse(fs.readFileSync(eventPath));
+var eventData = JSON.parse(fsmodule.readFileSync(eventPath));
 console.debug(`Event path: ${eventPath}`);
 var GITHUB_TOKEN = DENO_ENV.GITHUB_TOKEN;
 var OPENAI_API_KEY = DENO_ENV.OPENAI_API_KEY;
