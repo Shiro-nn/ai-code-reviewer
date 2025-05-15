@@ -1,4 +1,4 @@
-name: "AI Code Review Action"
+name: "AI Code Review"
 description: "Perform code reviews and comment on diffs using OpenAI API."
 inputs:
   GITHUB_TOKEN:
@@ -22,7 +22,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run AI Code Review binary
+    - name: Run AI Code Review
       shell: bash
       env:
         GITHUB_EVENT_PATH: ${{ github.event_path }}
