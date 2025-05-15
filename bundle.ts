@@ -15,11 +15,9 @@ await esbuild.build({
   define: {
     "DENO_ENV": "process.env",
     // replace Deno.read to fs
-    "Deno.readTextFileSync": "fs.readFileSync",
+    "Deno.readTextFileSync": "fsmodule.readFileSync",
   },
-  banner: {
-    js: 'import fs from "fs";', // чтобы fs.readFileSync работал
-  },
+  banner: { js: 'import * as fsmodule from "fs";' },
   outfile: "dist/out.js",
 });
 
